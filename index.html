@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ritmo — hábitos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f3eee6;
+    --surface: #fffdf8;
+    --ink: #1c1915;
+    --muted: #6e675e;
+    --line: #e4dcd0;
+    --accent: #c45c26;
+    --accent-ink: #fff7f2;
+    --today: #f6e7d4;
+    --shadow: 0 18px 40px rgba(48, 32, 16, 0.06);
+    --radius: 18px;
+    --sans: "Outfit", system-ui, sans-serif;
+    --serif: "Fraunces", Georgia, serif;
+    --moss: #3f6b4a;
+    --clay: #c45c26;
+    --sea: #2f6f7e;
+    --navy: #2c3e6b;
+    --plum: #6b3a5a;
+    --gold: #a0792c;
+    --berry: #8c3a3a;
+    --slate: #4a5560;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(1200px 500px at 10% -10%, #efe4d2 0%, transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:disabled { cursor: default; }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 72px; }
+  header.top {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+    margin-bottom: 22px;
+  }
+  .brand { display: flex; flex-direction: column; gap: 4px; }
+  .mark {
+    font-family: var(--serif); font-weight: 650; font-size: 40px; letter-spacing: -0.03em; line-height: 1;
+  }
+  .sub { color: var(--muted); font-size: 14px; }
+  .today-pill {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow);
+  }
+  .ring { width: 36px; height: 36px; }
+  .today-pill strong { display: block; font-size: 14px; font-weight: 600; }
+  .today-pill span { color: var(--muted); font-size: 12px; }
+  .toolbar {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .seg { display: flex; background: #ebe4d8; border-radius: 999px; padding: 3px; }
+  .seg button {
+    border: 0; background: transparent; border-radius: 999px; padding: 8px 14px; min-height: 40px;
+    color: var(--muted); font-weight: 500;
+  }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+  .nav { display: flex; align-items: center; gap: 8px; }
+  .nav button, .icon-btn, .ghost, .primary {
+    border: 1px solid var(--line); background: var(--surface); border-radius: 12px; min-height: 44px;
+  }
+  .nav button { width: 44px; }
+  .nav .label { min-width: 148px; text-align: center; font-weight: 560; font-size: 14px; }
+  .primary {
+    background: var(--accent); color: var(--accent-ink); border-color: transparent; padding: 0 16px; font-weight: 600;
+  }
+  .ghost { padding: 0 14px; background: transparent; }
+  .icon-btn { width: 44px; display: grid; place-items: center; background: transparent; }
+  .board {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .week-head, .habit {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.4fr) repeat(7, minmax(44px, 1fr)) 92px;
+    gap: 6px; align-items: center;
+  }
+  .week-head {
+    padding: 12px 14px 8px; color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+  }
+  .week-head .d { text-align: center; }
+  .week-head .d.today { color: var(--accent); font-weight: 600; }
+  .habit { padding: 10px 14px; border-top: 1px solid var(--line); }
+  .habit-meta { display: flex; gap: 10px; align-items: center; min-width: 0; }
+  .swatch { width: 10px; height: 36px; border-radius: 99px; flex: none; }
+  .habit-meta h3 { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .habit-meta p { margin: 2px 0 0; color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .check {
+    height: 44px; border-radius: 12px; border: 1px solid var(--line); background: #faf7f2;
+    display: grid; place-items: center; padding: 0;
+  }
+  .check.today { background: var(--today); border-color: #edd3b0; }
+  .check.on { color: white; border-color: transparent; }
+  .check svg { width: 18px; height: 18px; }
+  .stats { text-align: right; font-size: 12px; color: var(--muted); line-height: 1.3; }
+  .stats b { display: block; color: var(--ink); font-size: 15px; font-weight: 600; }
+  .row-actions { display: flex; gap: 4px; margin-top: 6px; justify-content: flex-end; }
+  .row-actions button { border: 0; background: transparent; color: var(--muted); min-height: 32px; padding: 0 4px; font-size: 12px; }
+  .row-actions button:hover { color: var(--ink); }
+  .empty { padding: 36px 20px 28px; text-align: center; }
+  .empty h2 { font-family: var(--serif); font-weight: 560; font-size: 28px; margin: 0 0 8px; }
+  .empty p { color: var(--muted); margin: 0 auto 16px; max-width: 420px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .chips button { border: 1px dashed #cfc4b4; background: transparent; border-radius: 999px; min-height: 40px; padding: 0 12px; }
+  .month { padding: 8px 12px 16px; }
+  .filters { display: flex; gap: 8px; overflow: auto; padding: 8px 4px 12px; }
+  .filters button {
+    border: 1px solid var(--line); background: #faf7f2; border-radius: 999px; min-height: 36px; padding: 0 12px;
+    white-space: nowrap; font-size: 13px;
+  }
+  .filters button[aria-pressed="true"] { background: var(--ink); color: #fffdf8; border-color: var(--ink); }
+  .cal {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+  }
+  .cal .dow { text-align: center; color: var(--muted); font-size: 12px; letter-spacing: .04em; text-transform: uppercase; padding-bottom: 4px; }
+  .day {
+    min-height: 72px; border-radius: 14px; border: 1px solid transparent; background: #faf7f2;
+    padding: 6px; text-align: left; position: relative;
+  }
+  .day.out { opacity: .38; }
+  .day.today { outline: 2px solid var(--accent); outline-offset: 0; }
+  .day .n { font-size: 12px; color: var(--muted); }
+  .dots { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 99px; }
+  .streak-cell { display: grid; place-items: center; min-height: 48px; }
+  .pill {
+    width: 100%; height: 28px; background: var(--cell, var(--accent));
+  }
+  .pill.solo { border-radius: 999px; }
+  .pill.start { border-radius: 999px 0 0 999px; }
+  .pill.mid { border-radius: 0; }
+  .pill.end { border-radius: 0 999px 999px 0; }
+  .miss { width: 8px; height: 8px; border-radius: 99px; background: #e4dcd0; }
+  .future { width: 8px; height: 8px; border-radius: 99px; background: transparent; border: 1px solid #e4dcd0; }
+  .legend { display: flex; gap: 14px; color: var(--muted); font-size: 12px; padding: 10px 4px 0; align-items: center; }
+  .panel {
+    margin-top: 16px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 12px;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 16px 8px;
+  }
+  .card h2 { font-family: var(--serif); font-weight: 560; font-size: 22px; margin: 0 0 10px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat { background: #faf7f2; border-radius: 14px; padding: 10px 12px; margin-bottom: 8px; }
+  .stat span { display: block; color: var(--muted); font-size: 12px; }
+  .stat strong { font-size: 22px; font-weight: 600; letter-spacing: -0.03em; }
+  .habit-stat {
+    display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: center;
+    padding: 10px 0; border-top: 1px solid var(--line);
+  }
+  .bar { height: 6px; background: #efe7dc; border-radius: 99px; margin-top: 6px; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 99px; }
+  dialog {
+    border: 0; padding: 0; background: transparent; width: min(440px, calc(100% - 24px));
+  }
+  dialog::backdrop { background: rgba(28, 25, 21, .38); }
+  .sheet { background: var(--surface); border-radius: 20px; padding: 18px; border: 1px solid var(--line); }
+  .sheet h2 { font-family: var(--serif); margin: 0 0 12px; font-weight: 560; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 6px; }
+  input[type="text"], textarea {
+    width: 100%; border: 1px solid var(--line); background: #faf7f2; border-radius: 12px; padding: 12px; min-height: 44px;
+  }
+  textarea { min-height: 72px; resize: vertical; }
+  .colors { display: flex; gap: 8px; flex-wrap: wrap; }
+  .colors button { width: 36px; height: 36px; border-radius: 99px; border: 2px solid transparent; }
+  .colors button[aria-pressed="true"] { border-color: var(--ink); }
+  .sheet-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 16px; }
+  .danger { background: transparent; border: 0; color: var(--berry); min-height: 44px; }
+  .day-sheet .list { display: flex; flex-direction: column; gap: 8px; }
+  .day-sheet .list button {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    border: 1px solid var(--line); background: #faf7f2; border-radius: 12px; min-height: 48px; padding: 8px 12px;
+  }
+  .foot { margin-top: 18px; color: var(--muted); font-size: 12px; }
+  @media (max-width: 860px) {
+    .week-head { display: none; }
+    .habit { grid-template-columns: 1fr; gap: 8px; }
+    .days7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .stats { text-align: left; display: flex; gap: 14px; align-items: baseline; }
+    .stats b { display: inline; font-size: 14px; }
+    .row-actions { justify-content: flex-start; }
+    .panel { grid-template-columns: 1fr; }
+    .mark { font-size: 34px; }
+    header.top { align-items: flex-start; flex-direction: column; }
+    .day { min-height: 58px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="mark">Ritmo</div>
+      <div class="sub" id="dateLine"></div>
+    </div>
+    <div class="today-pill" id="todayPill"></div>
+  </header>
+  <div class="toolbar">
+    <div class="seg" role="tablist">
+      <button type="button" id="tabWeek" aria-pressed="true">Semana</button>
+      <button type="button" id="tabMonth" aria-pressed="false">Mês</button>
+    </div>
+    <div class="nav">
+      <button type="button" id="prev" aria-label="Período anterior">‹</button>
+      <div class="label" id="periodLabel"></div>
+      <button type="button" id="next" aria-label="Próximo período">›</button>
+      <button type="button" class="ghost" id="jumpToday">Hoje</button>
+    </div>
+    <button type="button" class="primary" id="addBtn">Novo hábito</button>
+  </div>
+  <section class="board" id="board"></section>
+  <section class="panel" id="panel"></section>
+  <p class="foot">Tudo fica neste navegador. Nada é enviado para um servidor.</p>
+</div>
+
+<dialog id="editor">
+  <form class="sheet" method="dialog" id="editorForm">
+    <h2 id="editorTitle">Novo hábito</h2>
+    <label for="name">Nome</label>
+    <input id="name" name="name" type="text" maxlength="48" required placeholder="Ex.: Caminhar 20 minutos" />
+    <label for="note">Intenção (opcional)</label>
+    <textarea id="note" name="note" maxlength="80" placeholder="Por que isso importa"></textarea>
+    <label>Cor</label>
+    <div class="colors" id="colors"></div>
+    <div class="sheet-actions">
+      <button type="button" class="danger" id="deleteBtn" hidden>Excluir</button>
+      <span style="flex:1"></span>
+      <button type="button" class="ghost" id="cancelBtn">Cancelar</button>
+      <button type="submit" class="primary">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dayDialog">
+  <div class="sheet day-sheet">
+    <h2 id="dayTitle"></h2>
+    <div class="list" id="dayList"></div>
+    <div class="sheet-actions">
+      <span style="flex:1"></span>
+      <button type="button" class="primary" id="dayClose">Fechar</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+const KEY = "ritmo.v1";
+const COLORS = [
+  { id: "moss", hex: "#3f6b4a" },
+  { id: "clay", hex: "#c45c26" },
+  { id: "sea", hex: "#2f6f7e" },
+  { id: "navy", hex: "#2c3e6b" },
+  { id: "plum", hex: "#6b3a5a" },
+  { id: "gold", hex: "#a0792c" },
+  { id: "berry", hex: "#8c3a3a" },
+  { id: "slate", hex: "#4a5560" },
+];
+const SUGGESTIONS = [
+  { name: "Beber água", note: "Um copo logo ao acordar", color: "sea" },
+  { name: "Ler 20 minutos", note: "Páginas, não telas", color: "navy" },
+  { name: "Caminhar", note: "Sair de casa, mesmo pouco", color: "moss" },
+  { name: "Meditar", note: "Dez minutos em silêncio", color: "plum" },
+  { name: "Dormir no horário", note: "Luzes apagadas no mesmo ponto", color: "gold" },
+];
+const WD = ["seg", "ter", "qua", "qui", "sex", "sáb", "dom"];
+const WD_U = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+const MONTHS = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+
+const $ = (s) => document.querySelector(s);
+let state = load();
+let view = "week";
+let anchor = startOfDay(new Date());
+let focusHabit = "all";
+let editingId = null;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return { habits: [], checks: {} };
+    const data = JSON.parse(raw);
+    if (!data || !Array.isArray(data.habits) || typeof data.checks !== "object") return { habits: [], checks: {} };
+    return data;
+  } catch { return { habits: [], checks: {} }; }
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function uid() { return Math.random().toString(36).slice(2, 10); }
+function startOfDay(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
+function iso(d) {
+  const x = startOfDay(d);
+  const m = String(x.getMonth()+1).padStart(2,"0");
+  const day = String(x.getDate()).padStart(2,"0");
+  return x.getFullYear() + "-" + m + "-" + day;
+}
+function parseISO(s) {
+  const [y,m,d] = s.split("-").map(Number);
+  return new Date(y, m-1, d);
+}
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate()+n); return startOfDay(x); }
+function mondayOf(d) {
+  const x = startOfDay(d);
+  const day = (x.getDay() + 6) % 7;
+  return addDays(x, -day);
+}
+function colorOf(id) { return COLORS.find(c => c.id === id) || COLORS[0]; }
+function checked(habitId, day) { return !!(state.checks[habitId] && state.checks[habitId][day]); }
+function setChecked(habitId, day, on) {
+  if (!state.checks[habitId]) state.checks[habitId] = {};
+  if (on) state.checks[habitId][day] = true;
+  else delete state.checks[habitId][day];
+  save();
+}
+function createdOK(habit, day) { return day >= habit.createdAt; }
+
+function currentStreak(habit, todayIso) {
+  let cursor = todayIso;
+  if (!checked(habit.id, cursor)) {
+    const y = iso(addDays(parseISO(cursor), -1));
+    if (!checked(habit.id, y)) return 0;
+    cursor = y;
+  }
+  let n = 0;
+  while (checked(habit.id, cursor)) {
+    n++;
+    cursor = iso(addDays(parseISO(cursor), -1));
+    if (n > 5000) break;
+  }
+  return n;
+}
+function bestStreak(habit) {
+  const days = Object.keys(state.checks[habit.id] || {}).sort();
+  if (!days.length) return 0;
+  let best = 1, run = 1;
+  for (let i = 1; i < days.length; i++) {
+    const prev = parseISO(days[i-1]);
+    const cur = parseISO(days[i]);
+    const diff = Math.round((cur - prev) / 86400000);
+    if (diff === 1) { run++; best = Math.max(best, run); }
+    else if (diff > 1) run = 1;
+  }
+  return best;
+}
+function rate(habit, daysBack, end) {
+  let done = 0, total = 0;
+  for (let i = 0; i < daysBack; i++) {
+    const day = iso(addDays(end, -i));
+    if (day < habit.createdAt) continue;
+    total++;
+    if (checked(habit.id, day)) done++;
+  }
+  return { done, total, pct: total ? Math.round(done / total * 100) : 0 };
+}
+
+function render() {
+  const today = startOfDay(new Date());
+  const todayIso = iso(today);
+  const long = today.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+  $("#dateLine").textContent = long.charAt(0).toUpperCase() + long.slice(1);
+
+  const habits = state.habits;
+  const doneToday = habits.filter(h => checked(h.id, todayIso)).length;
+  const pct = habits.length ? doneToday / habits.length : 0;
+  const msg = !habits.length ? "Sem hábitos ainda"
+    : doneToday === habits.length ? "Dia completo"
+    : doneToday === 0 ? "O dia ainda está aberto"
+    : doneToday + " de " + habits.length;
+  const detail = !habits.length ? "adicione o primeiro"
+    : doneToday === habits.length ? "isso vira identidade"
+    : doneToday === 0 ? "marque o que já fez"
+    : "falta pouco";
+  const r = 15, c = 2 * Math.PI * r, dash = (pct * c).toFixed(1);
+  $("#todayPill").innerHTML =
+    '<svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="'+r+'" fill="none" stroke="#e4dcd0" stroke-width="3"/><circle cx="18" cy="18" r="'+r+'" fill="none" stroke="#c45c26" stroke-width="3" stroke-linecap="round" stroke-dasharray="'+dash+' '+c+'" transform="rotate(-90 18 18)"/></svg>' +
+    '<div><strong>'+escapeHtml(msg)+'</strong><span>'+escapeHtml(detail)+'</span></div>';
+
+  $("#tabWeek").setAttribute("aria-pressed", String(view==="week"));
+  $("#tabMonth").setAttribute("aria-pressed", String(view==="month"));
+
+  if (view === "week") {
+    const start = mondayOf(anchor);
+    const end = addDays(start, 6);
+    $("#periodLabel").textContent = formatRange(start, end);
+    renderWeek(start, todayIso);
+  } else {
+    $("#periodLabel").textContent = MONTHS[anchor.getMonth()] + " 
